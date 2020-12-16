@@ -14,12 +14,15 @@
     translateZ(2.8) ccube([4,4,7]);
   }
 
-  module component_slider(position = 50) {
+  module component_slider(position = 50, for_cutout=false) {
     silver()
     ccube([45.2, 7.6, 7]);
     silver()
     translateX((position/100 * 30) - 15)
     translateZ(7.5) ccube([5, 1.2, 21.5]);
+    if (for_cutout) {
+      translateZ(7.5) ccube([46, 3, 21.5]);
+    }
   }
 
   module component_momentary_barrel() {

@@ -2,18 +2,38 @@ include <sn_tools.scad>
 include <power_supplies.scad>
 include <controller-components.scad>
 
+/** project
+  Phase 1: working with controller mounted and wired
+    * core
+      * screen frame fixes
+        * side buttons (screen momentary switches)
+        * increase space between frame and screen by 2 mm
+
+  phase 2: joystick working
+
+  phase 3: Charger
+
+**/
+
 /** Scripting stuff **/
   batch_rendering = false;
   if (!batch_rendering) render_workspace();
 
   module render_workspace() {
-    $fn = 50;
+    $fn = 20;
     // sc_place_components();
     // sc_shell_mock();
     sc_shell_screen_frame();
-    
+    // difference() {
+      purple() sc_shell_top();
+      translateZ(-0.2) blue() sc_shell_bottom_sides();
+
+      translateZ(-0.1) red() sc_shell_bottom_battery();
+    //   #ccube([0.01, 200, 50]);
+    // }
 
   }
+
 
 /** tooling modules **/
 
@@ -23,50 +43,35 @@ include <controller-components.scad>
   }
 
 /** globals **/
-  sc_joystick_offset = [-120, 12, 0];
+  sc_joystick_offset = [-112, -38, 2];
   sc_screen_offset = [0, 0, 10];
-  sc_button_group_R_offset = [-135, -40, 7];
-  sc_button_group_L_offset = [-sc_button_group_R_offset[0], sc_button_group_R_offset[1], sc_button_group_R_offset[2]];
-  sc_slider_R_offset = [-95, -40, sc_button_group_R_offset[2] + 3];
-  sc_slider_L_offset = [-sc_slider_R_offset[0], sc_slider_R_offset[1], sc_slider_R_offset[2]];
-  sc_battery_rotation = [240, 0, 0];
-  sc_battery_offset = [-42, 40, -22];
+  sc_battery_rotation = [180, 0, 0];
+  sc_battery_offset = [-42, 45, -7];
   sc_pi_offset = [30, -30, -8];
   sc_pi_rotation = [180, 0, -90];
-  sc_teensy_offset = [-40, -40,-4];
+  sc_teensy_offset = [-38, -40,-4];
   sc_teensy_rotation = [180, 0, -90];
-  sc_bucky_offset = [-40, 5, -4];
+  sc_bucky_offset = [-31, 2, -4];
   sc_bucky_rotation = [180, 0, 90];
+  sc_trigger_offset = [145, -60, 0];
 
-  sc_trigger_R_offset = [-115, -60, -12];
+  sc_button_board_offset_R = [-110, 30, 5];
+  sc_button_board_offset_L = [-sc_button_board_offset_R[0], sc_button_board_offset_R[1], sc_button_board_offset_R[2]];
+  sc_button_board_rotation_Z = 90;
 
-  sc_power_switch_offset= [-90, -60, -5];
+  sc_power_switch_offset= [-140, 5, -10];
   sc_screen_pi_lugs = [58,49];
-
 
 /** non-print parts **/
   module sc_place_components() {
     // power switch
-    translate(sc_power_switch_offset) rotate([90,0,0]) component_barrel_power_switch();
+    translate(sc_power_switch_offset) rotate([90,0,-90]) component_barrel_power_switch();
     // buttons
-      // right x buttons
-      translate(sc_button_group_R_offset) sc_button_group_R();
-      translate(sc_button_group_L_offset) sc_button_group_L();
-
-      // triggers
-      mirrorX()
-      translate(sc_trigger_R_offset) {
-        translate([-15,0,6]) rotateX(90) component_momentary_barrel();
-        translate([0,0,-6]) rotateX(90) component_momentary_barrel();
-      }
       // left & right stick
       mirrorX() translate(sc_joystick_offset) sc_joystick();
 
-      // left slider
-      translate(sc_slider_L_offset) rotateZ(90) component_slider();
-
-      // right slider
-      translate(sc_slider_R_offset) rotateZ(90) component_slider();
+    sc_button_board_L();
+    sc_button_board_R();
 
     // batteries
       mirrorX() translate(sc_battery_offset) rotate(sc_battery_rotation) battery_holder_dual_18650(withBatteries=true);
@@ -81,95 +86,150 @@ include <controller-components.scad>
       translate(sc_teensy_offset) rotate(sc_teensy_rotation) sc_board_teensy();
 
       // bucky
-      translate(sc_bucky_offset) rotate(sc_bucky_rotation) make_power_supply_bucky_5a();
+      translate(sc_bucky_offset) rotate(sc_bucky_rotation) sc_bucky();
 
-      // right button board
-      // left button board
-      // screenframeboards
+      // triggers
+      mirrorX() translate(sc_trigger_offset) sc_triggers();
   }
 
-    
+  module sc_bucky() {
+    green()
+    difference() {
+      ccube([37, 47, 1.5]);
+      #sc_bucky_screws();
+    }
+  }
+
+  module sc_bucky_screws(d=2.9, h=2) {
+    mirrorX() translateX(15)
+      translateY(42/2)
+      ccylinder(h = h, d = d);
+    translateX(-15)
+      translateY(-38/2)
+      ccylinder(h = h, d = d);
+    translateX(15)
+      translateY(-42/2)
+      ccylinder(h = h, d = d);
+
+  }
+
+  module sc_bucky_test() {
+    difference() {
+      union() {
+        hull() {
+          sc_bucky_screws(d=6, h=2);
+        }
+        translateZ(4)
+          sc_bucky_screws(d=6, h=8);
+      }
+      union() {
+        sc_bucky_screws(h = 20);
+      }
+    }
+  }
+
 // components
-  module sc_button_group_R() {
-    offset = 11.5;
 
-    translate([offset * 2 + 2.54, offset, 0]) {
-      component_momentary_button_12();
-      white()
-      component_momentary_button_12_cap();
+  module sc_pushbutton(cap_color="white", os = 0) {
+    translateZ(1.5)
+    color(cap_color) {
+      ccylinder(d=9 + os, h=14.5);
+      translateZ(-3.7) ccylinder(d=12 + os, h=7.2);
     }
+  }
+  
+  module sc_button_board_R() {
+    translate(sc_button_board_offset_R) sc_button_board();
+  }
 
-    translate([offset * 2 + 2.54, -offset, 0]) {
-      component_momentary_button_12();
-      white()
-      component_momentary_button_12_cap();
-    }
+  module sc_button_board_L() {
+    translate(sc_button_board_offset_L) mirror([1,0,0]) sc_button_board(col_1="DarkSlateGray", col_2="DarkSlateGray", col_3="DarkSlateGray", col_4="DarkSlateGray");
+  }
 
-    translateX(offset) {
-      component_momentary_button_12();
-      blue()
-      component_momentary_button_12_cap();
-    }
+  module sc_button_board_panel_extras() {
+    translate(sc_button_board_offset_R) sc_button_board_panel_extra();
+    translate(sc_button_board_offset_L) mirror([1,0,0]) sc_button_board_panel_extra();
+  }
 
-    translateX(-offset) {
-      component_momentary_button_12();
-      red()
-      component_momentary_button_12_cap();
-    }
-
-    translateY(offset) {
-      component_momentary_button_12();
-      green()
-      component_momentary_button_12_cap();
-    }
-
-    translateY(-offset) {
-      component_momentary_button_12();
-      component_momentary_button_12_cap();
+  module sc_button_board_panel_extra() {
+    rotateZ(sc_button_board_rotation_Z)
+    union() {
+      translateZ(5.3) {
+        make_drill_holes(size=[66,46,9], shaftD=6);
+        translate([-13.68, 0.7, 0])
+        ccylinder(d = 6, h = 9);
+      }
     }
   }
 
-  module sc_button_group_L() {
-    offset = 11.5;
+  module sc_button_board_cutouts() {
+    translate(sc_button_board_offset_R) sc_button_board_cutout();
+    translate(sc_button_board_offset_L) mirror([1,0,0]) sc_button_board_cutout();
+  }
 
-    translate([-(offset * 2 + 2.54), offset, 0]) {
-      component_momentary_button_12();
-      white()
-      component_momentary_button_12_cap();
+  module sc_button_board_cutout() {
+    rotateZ(sc_button_board_rotation_Z) {
+      // screws
+      make_drill_holes(size=[66,46,25], shaftD=2.6);
+
+      // slider cut out
+      translate(sc_slider_R_offset) rotateZ(90) component_slider(for_cutout=true);
     }
 
-    translate([-(offset * 2 + 2.54), -offset, 0]) {
-      component_momentary_button_12();
-      white()
-      component_momentary_button_12_cap();
-    }
+    // buttons
+    sc_button_board(os=1.5);
+  }
 
-    translateX(offset) {
-      green()
-      component_momentary_button_12_cap();
-      component_momentary_button_12();
-    }
+  sc_trigger_R_offset = [0, -20, -12];
+  sc_button_group_R_offset = [-20, 0, 7];
+  sc_slider_R_offset = [24.85, 0, 4.5];
 
-    translateX(-offset) {
-      green()
-      component_momentary_button_12_cap();
-      component_momentary_button_12();
-    }
+  module sc_button_board(col_1="DarkSlateGray", col_2="red", col_3="green", col_4="yellow", os=0) {
+    rotateZ(sc_button_board_rotation_Z) {
+      // green board
+      rotateZ(90) make_protoboard_50_70();
+      // iec box
+      translate([23,0,-6])
+      black() ccube([9, 28, 9.9]);
+      // right slider
+      translate(sc_slider_R_offset) rotateZ(90) component_slider();
+      // right x buttons
+        translate([11.5, -19, 7])
+          sc_pushbutton("white", os=os);
 
-    translateY(offset) {
-      green()
-      component_momentary_button_12_cap();
-      component_momentary_button_12();
-    }
+        // 23.5 36.44
+        translate([-1.44, -19, 7])
+          sc_pushbutton("white", os=os);
 
-    translateY(-offset) {
-      green()
-      component_momentary_button_12_cap();
-      component_momentary_button_12();
+      translate([-13.68, 0.7, 7]) {
+
+        translate([12.7, 0, 0])
+          sc_pushbutton(col_1, os=os);
+
+        translate([-12.7, 0, 0])
+          sc_pushbutton(col_2, os=os);
+
+        translate([0, 12.7, 0])
+          sc_pushbutton(col_3, os=os);
+
+        translate([0, -12.7, 0])
+          sc_pushbutton(col_4, os=os);
+      }
     }
+  }
+  // triggers
+
+  module sc_triggers() {
+    // triggers
+      translate([0,-5,6]) rotateX(90) component_momentary_barrel();
+      translate([0,-5,-6]) rotateX(90) component_momentary_barrel();
   }
 
   // joystick
+    module sc_joysticks_cutouts() {
+      mirrorX() translate(sc_joystick_offset) sc_joystick(for_cutout = true);
+    }
+
     module sc_joystick_inv(for_cutout = false) {
       mirror([1, 0, 0]) sc_joystick(for_cutout = for_cutout);
     }
@@ -180,42 +240,49 @@ include <controller-components.scad>
       translateZ(12.5) ccylinder(d=8, h = 50);
       difference() {
         union(){
-          black() {
+          // lock/unlock
+          if (for_cutout) {
             // round
-            ccylinder(d = 42, h = 25);
-            // crosshair
-            translateZ(0.8) {
-              ccube([1, 37, 25]);
-              ccube([37, 1, 25]);
-            }
+            ccylinder(d = 44, h = 40);
+            //component cutout
+            translateZ(-5)
+            ccube([58, 58, 28]);
+            translate([24, 0, -6]) 
+              rotateY(90) rotateZ(-90)make_pie_slice(d=60, h = 6, angle=80);
+
+            translate([20, 0, 15])
+              ccube([5, 20, 20]);
+            make_drill_holes(size=[39,39,25], shaftD=6);
+            make_drill_holes(size=[39,39,40], shaftD=2.5);
+          }
+          else {
+            //component cutout
+            translateZ(-5)
+            %ccube([58, 58, 28]);
             // square
             translate([0, 1, -1.25]) ccube([43, 45, 23]);
             make_drill_holes(size=[39,39,25], shaftD=5);
 
-            // lock/unlock
+            black() {
+              // round
+              ccylinder(d = 42, h = 25);
+              // crosshair
+              translateZ(0.8) {
+                ccube([1, 37, 25]);
+                ccube([37, 1, 25]);
+              }
+            }
             translate([24, 0, -5]) {
               rotateY(90) rotateZ(-90)make_pie_slice(d=40, h = 4.5, angle=70);
               rotateY(90) rotateZ(-10)make_pie_slice(d=30, h = 3, angle=200);
               translateZ(16) ccube([3.5, 6, 20]);
             }
           }
-
-          //component cutout
-          if (!for_cutout) {
-            translateZ(-5)
-            %ccube([58, 58, 28]);
-          }
-
-
-
         }
-        #union() {
-          black()
-          sc_joystick_cutouts();
+        union() {
+          if (!for_cutout) black() sc_joystick_cutouts();
         }
       }
-
-
     }
 
     module sc_joystick_cutouts() {
@@ -248,21 +315,28 @@ include <controller-components.scad>
             
             // power plug
             translate([67.5,-20.5,-5]) ccube([10,15, 20]);
+
             // usb touch plug
-            translate([65,20.5,-5]) ccube([10,15, 20]);
+            translate([65,20.5,-5]) ccube([15,20, 20]);
             
             // side buttons
-            translate([-79.51, 0, -5]) ccube([10, 55, 10]);
+            translate([-77.5, 0, -7]) ccube([13, 55, 15]);
 
             // pcb
             ccube([165, 107, 1.8]);
-            mirrorX() translateX(80.5) hull() {
+
+            mirrorX() translateX(78.5) hull() {
               translateY(58) ccylinder(d = 8, h = 1.8);
               translateY(-58) ccylinder(d = 8, h = 1.8);
             }
           }
           silver() sc_screen_pi_lugs();
-          if (for_cutout) sc_screen_cutouts();
+          if (for_cutout) {
+            sc_screen_cutouts();
+            // panel
+            translateZ(2.2)
+            ccube([159, 94, 15]);
+          }
         }
         #union() {
           if (!for_cutout) sc_screen_cutouts();
@@ -271,9 +345,9 @@ include <controller-components.scad>
 
     }
 
-    module sc_screen_cutouts(for_cutout=false) {
-      make_drill_holes(size=[161,116,20], shaftD=3);
-      sc_screen_pi_lugs(true);
+    module sc_screen_cutouts(for_cutout=false, d = 3, h = 20) {
+      make_drill_holes(size=[157,116,h], shaftD=d);
+      if (!for_cutout) sc_screen_pi_lugs(true);
     }
 
     module sc_screen_pi_lugs(for_cutout=false) {
@@ -297,7 +371,7 @@ include <controller-components.scad>
 
   module sc_board_teensy() {
     // greenboard
-    make_protoboard_40_60(corner_screws=3.3, pin_holes=true);
+    make_protoboard_40_60(corner_screws=3.3, pin_holes=false);
     // teensy 3.6
     translate([0, 0.5*2.54, 12])
     component_make_teensy_32();
@@ -317,18 +391,9 @@ include <controller-components.scad>
 
     // input power
     translate([4*2.54, 7.5 * -2.54, 0]) component_make_header_pin_range(1, 2);
+    translate([3.5*2.54, 8.5 * -2.54, 0]) component_make_header_pin_range(1, 3);
     // spi/i2c
     mirrorY() translate([-6.5*-2.54, 7.5 * -2.54, 0]) component_make_header_pin_range(3, 1);
-  }
-
-  module sc_board_teensy_cutouts(for_cutout=false) {
-// make_protoboard_screws(size_X=30, size_Y=40, corner_screws=2.5, corner_screw_edge=1.3, screw_length=20, hex_size=[5,5], screw_purchase=2)
-
-  }
-
-
-  module sc_board_teensy_cutouts() {
-
   }
 
 /** modules for print **/
@@ -356,12 +421,180 @@ include <controller-components.scad>
       // teensy board
     }
 
+    sc_shell_positions = [
+      [85, -68, 0],
+      [152, -68, 0],
+      [147, 0, 0],
+      [143, 55, 0],
+      [137, 70, 0],
+      [85, 70, 0],
+      [-85, 70, 0],
+      [-137, 70, 0],
+      [-143, 55, 0],
+      [-147, 0, 0],
+      [-152, -68, 0],
+      [-85, -68, 0],
+    ];
+
+    sc_shell_corner_position_count = len(sc_shell_positions);
+
+    sc_top_thickness = 3;
+    sc_outer_frame_H = 35;
+    sc_frame_part_D = 3;
+
     module sc_shell_top() {
-      
+      difference() {
+        union() {
+          // top flat
+          translateZ(sc_button_board_offset_R[2] + 10)
+          hull() {
+            for (position = sc_shell_positions) {
+              translate(position) {
+                csphere(d = sc_frame_part_D );
+              }
+            }
+          }
+          // buttons
+          sc_button_board_panel_extras();
+          // outer frame
+
+          h0 = 50;
+          h1 = 45;
+          h2 = 35;
+          h3 = 25;
+
+          translateZ(-2.5)
+          progressive_hull() {
+                
+            translateZ(-2.5)translate(sc_shell_positions[0]) ccylinder(d = sc_frame_part_D, h = 40);
+            translate(sc_shell_positions[1]) ccylinder(d = sc_frame_part_D, h = h2);
+            translate(sc_shell_positions[2]) ccylinder(d = sc_frame_part_D, h = h2);
+            translateZ(5) translate(sc_shell_positions[3]) ccylinder(d = sc_frame_part_D, h = h3);
+            translateZ(5) translate(sc_shell_positions[4]) ccylinder(d = sc_frame_part_D, h = h3);
+            translateZ(-5) translate(sc_shell_positions[5]) ccylinder(d = sc_frame_part_D, h = h1);
+            translateZ(-5) translate(sc_shell_positions[6]) ccylinder(d = sc_frame_part_D, h = h1);
+            translateZ(5) translate(sc_shell_positions[7]) ccylinder(d = sc_frame_part_D, h = h3);
+            translateZ(5) translate(sc_shell_positions[8]) ccylinder(d = sc_frame_part_D, h = h3);
+            translate(sc_shell_positions[9]) ccylinder(d = sc_frame_part_D, h = h2);
+            translate(sc_shell_positions[10]) ccylinder(d = sc_frame_part_D, h = h2);
+            translateZ(-2.5)translate(sc_shell_positions[11]) ccylinder(d = sc_frame_part_D, h = 40);
+            translateZ(-2.5)translate(sc_shell_positions[0]) ccylinder(d = sc_frame_part_D, h = 40);
+          }
+
+          translate(sc_screen_offset)
+          translateZ(3.65) sc_screen_cutouts(for_cutout=false, d = 10, h = 5.5);
+
+
+
+        }
+        union() {
+          // buttons
+          sc_button_board_cutouts();
+
+          // joysticks
+          sc_joysticks_cutouts();
+
+          // screen
+          translate(sc_screen_offset) sc_screen(for_cutout=true);
+
+          // ports
+          translate([0, -70, -13])
+          ccube([100, 20, 25]);
+
+          // bottom panel
+          sc_shell_bottom();
+
+          // triggers
+          mirrorX() translate(sc_trigger_offset) sc_triggers();
+
+
+          // screws
+        }
+      }
     }
+
+    sc_shell_points = [
+      [sc_shell_positions[0][0], sc_shell_positions[0][1], -25],
+      [sc_shell_positions[1][0], sc_shell_positions[1][1], -20],
+      [sc_shell_positions[2][0], sc_shell_positions[2][1], -20],
+      [sc_shell_positions[3][0], sc_shell_positions[3][1], -10],
+      [sc_shell_positions[4][0], sc_shell_positions[4][1], -10],
+      [sc_shell_positions[5][0], sc_shell_positions[5][1], -30],
+    ];
     
+    module sc_shell_bottom_sides() {
+      difference() {
+        sc_shell_bottom();
+        sc_shell_bottom_cutter(oversize = 0.9);
+      }
+    }
+
+    module sc_shell_bottom_battery() {
+      intersection() {
+        sc_shell_bottom();
+        sc_shell_bottom_cutter();
+      }
+    }
+
+    module sc_shell_bottom_cutter(oversize = 0.1) {
+      hull() {
+        mirrorX() {
+          translate([sc_shell_points[0][0] - 8, sc_shell_points[0][1], sc_shell_points[0][2]]) ccube(d = sc_frame_part_D + oversize);
+          translate([sc_shell_points[5][0] - 8, sc_shell_points[5][1], sc_shell_points[5][2]]) ccube(d = sc_frame_part_D + oversize);
+        }
+      }
+    }
+
     module sc_shell_bottom() {
-      
+      // angle panels 
+        // 012, 235, 345, 025
+        part_size = sc_frame_part_D + 0.01;
+
+        mirrorX()
+        union() {
+          hull() {
+            translate(sc_shell_points[0]) flat_bottom_sphere(d = part_size, inv = true);
+            translate(sc_shell_points[1]) flat_bottom_sphere(d = part_size, inv = true);
+            translate(sc_shell_points[2]) flat_bottom_sphere(d = part_size, inv = true);
+          }
+
+          hull() {
+            translate(sc_shell_points[2]) flat_bottom_sphere(d = part_size, inv = true);
+            translate(sc_shell_points[3]) flat_bottom_sphere(d = part_size, inv = true);
+            translate(sc_shell_points[5]) flat_bottom_sphere(d = part_size, inv = true);
+          }
+
+          hull() {
+            translate(sc_shell_points[3]) flat_bottom_sphere(d = part_size, inv = true);
+            translate(sc_shell_points[4]) flat_bottom_sphere(d = part_size, inv = true);
+            translate(sc_shell_points[5]) flat_bottom_sphere(d = part_size, inv = true);
+          }
+
+          hull() {
+            translate(sc_shell_points[0]) flat_bottom_sphere(d = part_size, inv = true);
+            translate(sc_shell_points[2]) flat_bottom_sphere(d = part_size, inv = true);
+            translate(sc_shell_points[5]) flat_bottom_sphere(d = part_size, inv = true);
+          }
+        }
+      // lower panel
+        hull() {
+          mirrorX() {
+            translate(sc_shell_points[0]) flat_bottom_sphere(d = part_size, inv = true);
+            translate(sc_shell_points[5]) flat_bottom_sphere(d = part_size, inv = true);
+          }
+        }
+    }
+
+    module flat_bottom_sphere(d = 5, inv=false) {
+      union() {
+        csphere(d=d);
+        if (inv) {
+          translateZ(d/4) ccylinder(d=d, h = d/2);
+        }
+        else {
+          translateZ(-d/4) ccylinder(d=d, h = d/2);
+        }
+      }
     }
     
     module sc_shell_screen_frame() {
@@ -379,31 +612,29 @@ include <controller-components.scad>
           translateZ(-7.8)
           translate(sc_screen_offset) {
             // pcb
-            hull() mirrorX() translateX(80.5)  {
+            hull() mirrorX() translateX(78.49)  {
               translateY(58) ccylinder(d = 8, h = 1.8);
               translateY(-58) ccylinder(d = 8, h = 1.8);
             }
           }
           // pi board
           translateZ(2.5)
-          sc_pi_cutouts(shaft_D=7, shaft_H=5);
+          sc_pi_cutouts(shaft_D=6, shaft_H=5);
 
           // teensy board
-
-          translate([sc_teensy_offset[0],sc_teensy_offset[1],sc_teensy_offset[2]+3.2]) rotate(sc_teensy_rotation) make_drill_holes(size = [36,56,5], shaftD=7);
+          translate([sc_teensy_offset[0],sc_teensy_offset[1],sc_teensy_offset[2]+3.2]) rotate(sc_teensy_rotation) make_drill_holes(size = [36,56,5], shaftD=6);
 
           // bucky board
-          translate([sc_bucky_offset[0],sc_bucky_offset[1],sc_bucky_offset[2]+3.2]) rotate(sc_bucky_rotation) make_power_supply_bucky_5a_screws(height = 5, screw_diameter = 7);
+          translate([sc_bucky_offset[0],sc_bucky_offset[1],sc_bucky_offset[2]+3.2]) rotate(sc_bucky_rotation) sc_bucky_screws(h = 5, d = 6);
 
           // battery mounts
-          translate([0,sc_battery_offset[1],sc_battery_offset[2]]) rotate(sc_battery_rotation) translate([0,-8,-1.5]) ccube([160, 37.8, 3]);
-          mirrorX() translate([77.5,sc_battery_offset[1] -2,sc_battery_offset[2] + 11.5]) rotate([-90,0,90]) make_triangle(size=[30,25,5]);
-          mirrorX() translate([47,sc_battery_offset[1] -2,sc_battery_offset[2] + 11.5]) rotate([-90,0,90]) make_triangle(size=[30,25,5]);
-          translate([0,sc_battery_offset[1]-2,sc_battery_offset[2] + 11.5]) rotate([-90,0,90]) make_triangle(size=[30,25,5]);
+          translateZ(3.5)
+          mirrorX() translate(sc_battery_offset) rotate(sc_battery_rotation) translateZ(2) battery_holder_dual_18650_part() ccylinder(d = 12, h = 8);
+
 
           //TODO: side mounts
         }
-        #union() {
+        union() {
           sc_shell_screen_frame_cutouts();
         }
       }
@@ -416,7 +647,7 @@ include <controller-components.scad>
       translate(sc_screen_offset) {
         translate([40,-10,-7.8]) makeRoundedBox([20,30,10]);
         translate([10,0,-7.8]) makeRoundedBox([20,20,10]);
-        translate([-40,0,-7.8]) makeRoundedBox([40,20,10]);
+        translate([-40,6,-7.8]) makeRoundedBox([40,20,10]);
         translate([-40,-45,-7.8]) makeRoundedBox([40,20,10]);
       }
       
@@ -432,10 +663,13 @@ include <controller-components.scad>
       translate(sc_teensy_offset) rotate(sc_teensy_rotation) make_drill_holes(size = [36,56,15], shaftD=2.9);
 
       // bucky board
-      translate(sc_bucky_offset) rotate(sc_bucky_rotation) make_power_supply_bucky_5a_screws(height = 15, screw_diameter = 2.9);
+      translate(sc_bucky_offset) rotate(sc_bucky_rotation) sc_bucky_screws(h = 15);
 
       // battery mounts
-      mirrorX() translate(sc_battery_offset) rotate(sc_battery_rotation) translateZ(2) battery_holder_dual_18650_bolts(withHexBlank=false);
+      translateZ(4.5)
+      mirrorX() translate(sc_battery_offset) rotate(sc_battery_rotation) translateZ(2) battery_holder_dual_18650_part() {
+        rivnut(bore_D = 4.7, bore_H = 11, flange_D = 7, flange_H = 0.8);
+      }
 
       //TODO: side mounts
 
