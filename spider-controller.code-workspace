@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "..\\symmetry.ninja\\openscad-strange-shapes"
+		},
+		{
+			"path": "..\\symmetry.ninja\\openscad-tools"
+		},
+		{
+			"path": "..\\symmetry.ninja\\openscad-parts"
+		}
+	],
+	"settings": {}
+}
