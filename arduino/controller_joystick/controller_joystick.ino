@@ -1,7 +1,6 @@
 #include <Timer.h>                  // A rather useful timer library to offset the comms loop requirement to the motion requirement
 
 
-#define L_STICK_B 20
 #define L_STICK_0 A3
 #define L_STICK_1 A4
 #define L_SLIDE A5
@@ -11,13 +10,12 @@
 #define L_BUTTON_2 12
 #define L_BUTTON_3 11
 #define L_BUTTON_4 10
-#define L_BUTTON_5 A10
-#define L_BUTTON_6 A11
+#define L_BUTTON_5 15
+#define L_BUTTON_6 16
 
-#define L_STICK_B A14
-#define R_STICK_0 A0
-#define R_STICK_1 A1
-#define R_SLIDE A2
+#define R_STICK_0 A10
+#define R_STICK_1 A11
+#define R_SLIDE A14
 #define R_TRIGGER_0 2
 #define R_TRIGGER_1 3
 #define R_BUTTON_1 4
@@ -28,7 +26,6 @@
 #define R_BUTTON_6 9
 
 struct ControllerState {
-  bool LStick_B = false;
   int LStick_0 = 0;
   int LStick_1 = 0;
   int LSlide = 0;
@@ -43,7 +40,6 @@ struct ControllerState {
   bool LButton5 = false;
   bool LButton6 = false;
   //right
-  bool RStick_B = false;
   int RStick_0 = 0;
   int RStick_1 = 0;
   int RSlide = 0;
@@ -64,10 +60,6 @@ ControllerState currentState;
 
 void setup() {
   Serial.begin(115200);
-  pinMode (L_STICK_B, INPUT);
-  // pinMode (L_STICK_0, INPUT);
-  // pinMode (L_STICK_1, INPUT);
-  // pinMode (L_SLIDE, INPUT);
   pinMode (L_TRIGGER_0, INPUT);
   pinMode (L_TRIGGER_1, INPUT);
   pinMode (L_BUTTON_1, INPUT);
@@ -77,10 +69,6 @@ void setup() {
   pinMode (L_BUTTON_5, INPUT);
   pinMode (L_BUTTON_6, INPUT);
 
-  // pinMode (R_STICK_B, INPUT);
-  // // pinMode (R_STICK_0, INPUT);
-  // // pinMode (R_STICK_1, INPUT);
-  // // pinMode (R_SLIDE, INPUT);
   // pinMode (R_TRIGGER_0, INPUT);
   // pinMode (R_TRIGGER_1, INPUT);
   // pinMode (R_BUTTON_1, INPUT);
@@ -99,7 +87,6 @@ void loop() {
 }
 
 void getState() {
-  currentState.LStick_B = digitalRead(L_STICK_B);
   currentState.LStick_0 = analogRead(L_STICK_0);
   currentState.LStick_1 = analogRead(L_STICK_1);
   currentState.LSlide = analogRead(L_SLIDE);
@@ -111,7 +98,6 @@ void getState() {
   currentState.LButton4 = digitalRead(L_BUTTON_4);
   currentState.LButton5 = digitalRead(L_BUTTON_5);
   currentState.LButton6 = digitalRead(L_BUTTON_6);
-  // currentState.RStick_B = digitalRead(L_STICK_B);
   // currentState.RStick_0 = digitalRead(R_STICK_0);
   // currentState.RStick_1 = digitalRead(R_STICK_1);
   // currentState.RSlide = digitalRead(R_SLIDE);

@@ -1,39 +1,38 @@
 # Wiring 
 
-## Button pad: Pin Layout
+## Button pad wiring
 
-Wiring from the underside.
+## Button pads
 
-<img src="images/pad_pins.png" width="300">
+| underside Pin Layout |  left layout | right layout |
+| - | - | - |
+| <img src="images/pad_pins.png" width="300"> | <img src="images/pad_left.png" width="300"> | <img src="images/pad_right.png" width="300"> |
 
-| Pin | purpose | Teensy Pin L | Teensy Pin R |
-|-|-|-|-|
-| 0 | negative | A GND | A GND |
-| 1 | positive | 3.3 | 3.3 |
-| 2 | stick button | 20 | 1 |
-| 3 | stick 0 | (17) A3 | (14) A0 |
-| 4 | stick 1 | (18) A4 | (15) A1 |
-| 5 | slide | (19) A5 | (16) A2 |
-| 6 | trigger 0 | 21 | 2 |
-| 7 | trigger 1 | 22 | 3 |
+
+| Pin | purpose     | Teensy Pin L  | Teensy Pin R | Todo L | Todo R |
+|-|-|-|-|-|-|
+| 0 | negative      | A GND         | A GND     | none | Do all |
+| 1 | positive      | 3.3           | 3.3       | none | Do all |
+| 2 | stick button  | 20            | (16) A14  | 10k ohm to gnd | Do all |
+| 3 | stick 0       | (17) A3       | A10       | done | Do all |
+| 4 | stick 1       | (18) A4       | A11       | done | Do all |
+| 5 | slide         | (19) A5       | A14       | done | Do all |
+| 6 | trigger 0     | 21            | 2         | 10k ohm to gnd | Do all |
+| 7 | trigger 1     | 22            | 3         | 10k ohm to gnd | Do all |
 | 8 | nc | | |
 | 9 | nc | | |
-| 10 | button 6 | 23 | 4 |
-| 11 | button 5 | 12 | 5 |
-| 12 | button 4 | 11 | 6 |
-| 13 | button 3 | 10 | 7 |
-| 14 | button 2 | A10 | 8 |
-| 15 | button 1 | A11 | 9 |
-
-## Button pad: left layout
-
-<img src="images/pad_left.png" width="300">
-
-## Button pad: right layout
-
-<img src="images/pad_right.png" width="300">
+| 10 | button 6     | 23            | 4         | 10k ohm to gnd | Do all |
+| 11 | button 5     | 12            | 5         | 10k ohm to gnd | Do all |
+| 12 | button 4     | 11            | 6         | 10k ohm to gnd | Do all |
+| 13 | button 3     | 10            | 7         | 10k ohm to gnd | Do all |
+| 14 | button 2     | (15) A1       | 8         | 10k ohm to gnd | Do all |
+| 15 | button 1     | (16) A2       | 9         | 10k ohm to gnd | Do all |
 
 
-## Teensy wiring
+## Teensy pinouts
 
-| Teensy Pin | 
+|Teensy front|teensy back|
+|-|-|
+|![teensya](images/teensy32_card7a_rev3.png) | ![teensyb](images/teensy32_card7b_rev3.png) |
+## Todos
+
