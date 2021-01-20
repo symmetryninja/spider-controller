@@ -6,12 +6,12 @@
 #define L_SLIDE A5
 #define L_TRIGGER_0 21
 #define L_TRIGGER_1 22
-#define L_BUTTON_1 23
-#define L_BUTTON_2 12
-#define L_BUTTON_3 11
-#define L_BUTTON_4 10
-#define L_BUTTON_5 15
-#define L_BUTTON_6 16
+#define L_BUTTON_1 15
+#define L_BUTTON_2 16
+#define L_BUTTON_3 23
+#define L_BUTTON_4 12
+#define L_BUTTON_5 11
+#define L_BUTTON_6 10
 
 #define R_STICK_0 A10
 #define R_STICK_1 A11
@@ -112,8 +112,6 @@ void getState() {
 }
 
 void outState() {
-  Serial.print("LStick_B : ");
-  Serial.println(currentState.LStick_B);
   Serial.print("LStick_0 : ");
   Serial.println(currentState.LStick_0);
   Serial.print("LStick_1 : ");
@@ -137,8 +135,6 @@ void outState() {
   Serial.print("LButton6 : ");
   Serial.println(currentState.LButton6);
 
-  // Serial.print("RStick_B : ");
-  // Serial.println(currentState.RStick_B);
   // Serial.print("RStick_0 : ");
   // Serial.println(currentState.RStick_0);
   // Serial.print("RStick_1 : ");

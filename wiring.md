@@ -21,12 +21,12 @@
 | 7 | trigger 1     | 22            | 3         | 10k ohm to gnd | Do all |
 | 8 | nc | | |
 | 9 | nc | | |
-| 10 | button 6     | 23            | 4         | 10k ohm to gnd | Do all |
-| 11 | button 5     | 12            | 5         | 10k ohm to gnd | Do all |
-| 12 | button 4     | 11            | 6         | 10k ohm to gnd | Do all |
-| 13 | button 3     | 10            | 7         | 10k ohm to gnd | Do all |
-| 14 | button 2     | (15) A1       | 8         | 10k ohm to gnd | Do all |
-| 15 | button 1     | (16) A2       | 9         | 10k ohm to gnd | Do all |
+| 10 | button 6     | 10            | 4         | 10k ohm to gnd | Do all |
+| 11 | button 5     | 11            | 5         | 10k ohm to gnd | Do all |
+| 12 | button 4     | 12            | 6         | 10k ohm to gnd | Do all |
+| 13 | button 3     | 23            | 7         | 10k ohm to gnd | Do all |
+| 14 | button 2     | 16            | 8         | 10k ohm to gnd | Do all |
+| 15 | button 1     | 15            | 9         | 10k ohm to gnd | Do all |
 
 
 ## Teensy pinouts
