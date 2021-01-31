@@ -19,7 +19,6 @@ include <controller-components.scad>
 
 /** Fixes
   * Top/all panel
-    * make the screw panels 1.2mm taller to the screen
     * cut a hole/holes for the xt60 pin mount.
   * underside panel
     * print outside up and raised completely off the bed for better removal of supports
@@ -31,14 +30,14 @@ include <controller-components.scad>
   if (!batch_rendering) render_workspace();
 
   module render_workspace() {
-    $fn = 20;
+    // $fn = 60;
     // sc_place_components();
     // sc_shell_screen_frame();
     // intersection() {
         // purple() sc_shell_top();
         // translate([80, 55, 10]) ccube([40,40,15]);}
-        translateZ(-5.2) blue() sc_shell_bottom_plate();
-      // translateZ(-10.1) red() sc_shell_bottom_battery();
+        // translateZ(-5.2) blue() sc_shell_bottom_plate();
+      translateZ(-10.1) red() sc_shell_bottom_battery();
   }
 
 /** tooling modules **/
@@ -585,7 +584,7 @@ include <controller-components.scad>
 
       sc_rivnut_mount_locations = [
         [ 30, 67, -23.5],
-        [ 30, 10, -21],
+        // [ 30, 10, -21],
       ];
     module sc_shell_battery_mounts() {
       for (mount = sc_rivnut_mount_locations) {
@@ -638,13 +637,9 @@ include <controller-components.scad>
     module sc_shell_bottom_plate() {
       difference() {
         union() {
-          translate([0, 6, -25])
-          rotateX(-2)
-          ccube([80, 20, 7.5]);
           sc_shell_bottom();
-
         }
-        union() {
+        #union() {
           sc_shell_bottom_cutter(oversize = 0.9);
           sc_shell_screw_mount_cutouts();
         }
@@ -657,9 +652,11 @@ include <controller-components.scad>
           sc_shell_bottom();
           sc_shell_bottom_cutter();
         }
-        mirrorX()
-        translateZ(-2)
-        sc_shell_battery_screws();
+        #union() {
+          mirrorX() translateZ(-2) sc_shell_battery_screws();
+          sc_shell_screw_mount_cutouts();
+
+        }
       }
     }
 
@@ -667,16 +664,13 @@ include <controller-components.scad>
       difference() {
         hull() {
           mirrorX() {
-            translate([sc_shell_points[0][0] - 8, sc_shell_points[0][1], sc_shell_points[0][2]]) ccube(d = sc_frame_part_D + oversize);
-            translate([sc_shell_points[5][0] - 8, sc_shell_points[5][1], sc_shell_points[5][2]]) ccube(d = sc_frame_part_D + oversize);
+            translate([sc_shell_points[0][0] - 16, sc_shell_points[0][1], sc_shell_points[0][2]]) ccube(d = sc_frame_part_D + oversize);
+            translate([sc_shell_points[5][0] - 16, sc_shell_points[5][1], sc_shell_points[5][2]]) ccube(d = sc_frame_part_D + oversize);
           }
         }
         union() {
-          mirrorX()
-          translate([87, 70, -30])
-          ccylinder(d = 30, h=20);
-          translate([0, -35, -30])
-          ccube([170 + oversize, 75 + oversize, 20 + oversize]);
+          // mirrorX() translate([87, 70, -30]) ccylinder(d = 30, h=20);
+          // translate([0, -35, -30]) ccube([170 + oversize, 75 + oversize, 20 + oversize]);
         }
       }
     }
