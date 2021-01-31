@@ -1,5 +1,11 @@
 #include <Timer.h>                  // A rather useful timer library to offset the comms loop requirement to the motion requirement
 
+/*
+  TODOs:
+  * create auto-filter for min/max on the analog
+  * create a deadzone on the analog for center position
+*/
+
 // pin definitions 
   #define L_STICK_UD      A3
   #define L_STICK_LR      A4
