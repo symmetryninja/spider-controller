@@ -1,11 +1,5 @@
 #include <Timer.h>                  // A rather useful timer library to offset the comms loop requirement to the motion requirement
 
-/*
-  TODOs:
-  * create auto-filter for min/max on the analog
-  * create a deadzone on the analog for center position
-*/
-
 // pin definitions 
   #define L_STICK_UD      A3
   #define L_STICK_LR      A4
@@ -139,7 +133,7 @@ void compareState() {
     currentState.RButton5 == lastState.RButton5 &&
     currentState.RButton6 == lastState.RButton6
   )) {
-    // outState();
+    outState();
     joystick710Send();
     mergeState();
   }
@@ -183,6 +177,14 @@ void joystick710Send() {
   Joystick.button(2, currentState.RButton6);
   
   Joystick.send_now();
+  
+  // special override for keyboard hat left & right to force the screen to wake after deep sleep
+  if (currentState.LButton3 && currentState.LButton5) {
+    Keyboard.set_modifier(MODIFIERKEY_ALT);
+    Keyboard.send_now();
+    Keyboard.set_modifier(0);
+    Keyboard.send_now();
+  }
 }
 
 void mergeState() {

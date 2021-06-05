@@ -1,9 +1,9 @@
 /* 
  * — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — 
  * “THE BEER-WARE LICENSE” (Revision 42):
- * <adam@symmetry.ninja> built this project. As long as you retain this  
- * notice you can do whatever you want with this stuff. If we meet
- * some day, and you think this stuff is worth it, you can buy me
+ * <spidey> built this project. As long as you retain this  
+ * notice you can do whatever you want with this project. If we meet
+ * some day, and you think this project is worth it, you can buy me
  * a beer in return.
  * — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — 
  * Amendment 1: The author(s) of this code accept absolutely no 

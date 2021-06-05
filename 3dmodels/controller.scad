@@ -34,9 +34,9 @@ include <controller-components.scad>
     // sc_place_components();
     // sc_shell_screen_frame();
     // intersection() {
-        // purple() sc_shell_top();
+        purple() sc_shell_top();
         // translate([80, 55, 10]) ccube([40,40,15]);}
-        // translateZ(-5.2) blue() sc_shell_bottom_plate();
+        translateZ(-5.2) blue() sc_shell_bottom_plate();
       translateZ(-10.1) red() sc_shell_bottom_battery();
   }
 
@@ -639,7 +639,7 @@ include <controller-components.scad>
         union() {
           sc_shell_bottom();
         }
-        #union() {
+        union() {
           sc_shell_bottom_cutter(oversize = 0.9);
           sc_shell_screw_mount_cutouts();
         }
@@ -652,7 +652,7 @@ include <controller-components.scad>
           sc_shell_bottom();
           sc_shell_bottom_cutter();
         }
-        #union() {
+        union() {
           mirrorX() translateZ(-2) sc_shell_battery_screws();
           sc_shell_screw_mount_cutouts();
 
