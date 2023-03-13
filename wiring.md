@@ -10,7 +10,7 @@
 
 
 | Pin | purpose     | Teensy Pin L  | Teensy Pin R |
-|-|-|-|-|-|-|
+|-|-|-|-|
 | 0 | negative      | A GND         | A GND     |
 | 1 | positive      | 3.3           | 3.3       |
 | 2 | stick button  | 20            | nc        |
@@ -19,8 +19,8 @@
 | 5 | slide         | (19) A5       | A14       |
 | 6 | trigger T     | 21            | 3         |
 | 7 | trigger B     | 22            | 2         |
-| 8 | nc |
-| 9 | nc |
+| 8 | nc | | |
+| 9 | nc | | |
 | 10 | button 6     | 10            | 9         |
 | 11 | button 5     | 11            | 8         |
 | 12 | button 4     | 12            | 7         |
