@@ -1,4 +1,4 @@
-#include <Timer.h>                  // A rather useful timer library to offset the comms loop requirement to the motion requirement
+// #include <Timer.h>                  // A rather useful timer library to offset the comms loop requirement to the motion requirement
 
 // pin definitions 
   #define L_STICK_UD      A3
