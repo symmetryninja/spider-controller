@@ -1,3 +1,10 @@
-.vscode
-spider-controller.code-workspace
+
+*~
+**.vscode
+.DS_Store
+Thumbs.db
+.idea
+/**/build
+/**/install
+/**/log
 3dmodels/outputs/
