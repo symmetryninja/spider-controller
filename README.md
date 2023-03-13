@@ -1,19 +1,14 @@
 # spider-controller
 A Raspberry Pi based linux system for driving ROS robots
 
-## Ros component todo's
+I have a Teensy 3.2 setup as a native joystick.
 
-1. create a buffer message to translate joystick commands to movement / motion commands
-2. create mode switch for switching instruction modes
-   1. walking
-   2. direct control
-   3. etc
-3. May require a merge with spider controller system:
-   1. Create RVIS display for robot and joint position updates 
-   2. Create UI for updating all the offset/parameters
+## Ros component
+
+This is a very basic joystick bridge, built on ROS2 Humble, it just publishes the joy commands to the ros subsystem.
 
 ## hardware Todo's
 
-1. swap sides the pi is on - make the sd card more accesible
+1. make the sd card more accesible
 2. include tindie usbc charger
 3. update case to suit charger
